@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import StringVar
 import tkinter.messagebox as mb
 import sqlite3
 
@@ -7,7 +6,7 @@ connector = sqlite3.connect('contacts.db')
 cursor = connector.cursor()
 
 cursor.execute(
-"CREATE TABLE IF NOT EXISTS CONTACT_BOOK (S_NO INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, NAME TEXT, EMAIL TEXT, PHONE_NUMBER TEXT, ADDRESS TEXT)"
+"CREATE TABLE IF NOT EXISTS CONTACT_BOOK (S_NO INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, NAME TEXT ,EMAIL TEXT ,PHONE_NUMBER TEXT , ADDRESS TEXT )"
 )
 
 
@@ -50,25 +49,19 @@ def delete_record():
     list_contacts()
 
 def update_records():
+    global connector, cursor
     name_value = name_entry.get()
     phone_value = phone_entry.get()
-    mail_value = email_entry.get()
-    add_value = address_entry.get()
-
-    # Update labels or perform any other processing with the values
-    name_label.config(text=f"Name: {name_value}")
-    phone_label.config(text=f"Phone_No: {phone_value}")
-    email_label.config(text=f"Email:{mail_value}")
-    address_label.config(text=f"Address:{add_value}")
-   
-
-def update_records():
-
-    what write here
-    
+    email_value=email_entry.get()
+    address_value = address_entry.get(1.0, END)
+    cursor.execute(
+        "UPDATE CONTACT_BOOK SET EMAIL=?, PHONE_NUMBER=?, ADDRESS=? WHERE NAME =?", (email_value,phone_value,address_value,  name_value))
+    connector.commit()
+    mb.showinfo('Contact updated',
+                'We have update the contact successfully!')
 def view_record():
     
-    global name_strvar, phone_strvar, email_strvar, address_entry, listbox
+    global name_strvar, phone_strvar, email_strvar, address_strvar, listbox
 
     curr = cursor.execute('SELECT * FROM CONTACT_BOOK WHERE NAME=?', listbox.get(ACTIVE))
     values = curr.fetchall()[0]
@@ -80,7 +73,7 @@ def view_record():
 
 
 def clear_fields():
-    global name_strvar, phone_strvar, email_strvar, address_entry, listbox
+    global name_strvar, phone_strvar, email_strvar, address_strvar, listbox
 
     listbox.selection_clear(0, END)
 
@@ -114,9 +107,10 @@ frame_font = ("Garamond", 14)
 
 # Creating the StringVar variables
 name_strvar = StringVar()
-phone_strvar = StringVar()
 email_strvar = StringVar()
+phone_strvar = StringVar()
 search_strvar = StringVar()
+
 
 # Creating and placing the components in the window
 Label(root, text='CONTACT BOOK', font=("Noto Sans CJK TC", 15, "bold"), bg='Black', fg='White').pack(side=TOP, fill=X)
@@ -143,15 +137,16 @@ name_label=Label(left_frame, text='Name', bg=lf_bg, font=frame_font).place(relx=
 name_entry = Entry(left_frame, width=15, font=("Verdana", 11), textvariable=name_strvar)
 name_entry.place(relx=0.1, rely=0.1)
 
-phone_label=Label(left_frame, text='Phone no.', bg=lf_bg, font=frame_font).place(relx=0.23, rely=0.2)
-
-phone_entry = Entry(left_frame, width=15, font=("Verdana", 11), textvariable=phone_strvar)
-phone_entry.place(relx=0.1, rely=0.25)
-
 email_label=Label(left_frame, text='Email', bg=lf_bg, font=frame_font).place(relx=0.3, rely=0.35)
 
 email_entry = Entry(left_frame, width=15, font=("Verdana", 11), textvariable=email_strvar)
 email_entry.place(relx=0.1, rely=0.4)
+
+
+phone_label=Label(left_frame, text='Phone no.', bg=lf_bg, font=frame_font).place(relx=0.23, rely=0.2)
+
+phone_entry = Entry(left_frame, width=15, font=("Verdana", 11), textvariable=phone_strvar)
+phone_entry.place(relx=0.1, rely=0.25)
 
 address_label=Label(left_frame, text='Address', bg=lf_bg, font=frame_font).place(relx=0.28, rely=0.5)
 
